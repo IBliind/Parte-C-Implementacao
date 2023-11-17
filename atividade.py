@@ -27,8 +27,6 @@ def listar_usuarios(usuarios):
         print("-" * 30)
         print(f"{Fore.YELLOW}Nome completo:{Style.RESET_ALL}", usuario["nome_completo"])
         print(f"{Fore.YELLOW}Nome de login:{Style.RESET_ALL}", usuario["nome_login"])
-        ##print(f"{Fore.YELLOW}Senha:{Style.RESET_ALL}", usuario["senha"])
-        ##print(f"{Fore.YELLOW}Senha Hash:{Style.RESET_ALL}", usuario["senha_hash"])
         print(f"{Fore.YELLOW}E-mail:{Style.RESET_ALL}", usuario["email"])
 
 # Questão 1) Adicionar usuarios
@@ -42,19 +40,17 @@ def adicionar_usuario(usuarios):
     # Conversão Hash512
     senha_hash = hashlib.sha512(senha.encode()).hexdigest()
 
-    # Dicionário
+    # Dicionário (Apenas a senha hash sera salva no JSON)
     novo_usuario = {
         "nome_completo": nome_completo,
         "nome_login": nome_login,
-        "senha": senha,
         "senha_hash": senha_hash,
         "email": email
     }
 
     usuarios.append(novo_usuario)
     salvar_usuarios(usuarios)
-    print("Usuário adicionado com sucesso!")
-
+    print(f"{Fore.GREEN}Usuário adicionado com sucesso!{Style.RESET_ALL}")
 
 # Questão 1) Remover usuarios
 def remover_usuario(usuarios):
@@ -64,10 +60,10 @@ def remover_usuario(usuarios):
         if usuario["nome_login"] == nome_login:
             usuarios.remove(usuario)
             salvar_usuarios(usuarios)
-            print("Usuário removido com sucesso!")
+            print("-" * 30)
+            print(f"{Fore.GREEN}Usuário removido com sucesso!{Style.RESET_ALL}")
             return
-
-    print("Usuário não encontrado.")
+    print(f"{Fore.RED}Usuário não encontrado{Style.RESET_ALL}")
 
 
 # Questão 2 - Login com hash (Arquivo JSON + login + senha)
@@ -77,27 +73,21 @@ def verificar_login(usuarios, nome_login, senha):
 
     # Se pecorre o arquivo JSON fazendo a comparação com o login e a senha convertida
     for usuario in usuarios:
-        if usuario["nome_login"] == nome_login and usuario["senha"] == senha_hash:
+        if usuario["nome_login"] == nome_login and usuario["senha_hash"] == senha_hash:
             return True
 
     return False
 
 
-# Questão 3 - Lista arquivos do diretorio atual
+# Questão 3 - Lista arquivos do diretorio atual (O 3 arquivos txt servem de exemplo para a listagem)
 def listar_arquivos(n, diretorio="."):
     for nome_arquivo in os.listdir(diretorio):
         caminho_arquivo = os.path.join(diretorio, nome_arquivo)
         tamanho = os.path.getsize(caminho_arquivo)
         tamanho_formatado = _formatar_tamanho(tamanho)
 
-        # if os.path.isfile(caminho_arquivo):
-        #     nome_formatado = Fore.BLUE + nome_arquivo
-        # else:
-        #     nome_formatado = Fore.RED + nome_arquivo
-
-        # Se chama a função temas para retornar uma cor.
         print(f"{temas(n) + nome_arquivo}\t{tamanho_formatado}")
-        print(Style.RESET_ALL)  # Reseta as cores para o próximo arquivo
+        print(Style.RESET_ALL)  # Reseta as cores
 
 
 # Questão 3 - Formatação do tamanho
@@ -109,7 +99,7 @@ def _formatar_tamanho(tamanho):
     return "{:.1f} {}".format(tamanho, unidade)
 
 
-# Questão 3 - Escolhe a cor
+# Questão 3 - Escolhe a cor (o 'n' eh o argumento que altera a cor)
 def temas(n):
     if n == 1:
         return Fore.MAGENTA
@@ -146,10 +136,10 @@ def menu(usuarios):
             print("-" * 30)
             if verificar_login(usuarios, nome_login, senha):
                 print("Usuário logado com sucesso!")
-                print("-" * 30)
+
             else:
                 print("Nome de login ou senha incorretos.")
-                print("-" * 30)
+
         elif opcao == "5":
             print("-" * 30)
             print("Escolha um tema:")
@@ -169,7 +159,7 @@ def menu(usuarios):
         elif opcao == "6":
             break
         else:
-            print("Opção inválida. Tente novamente.")
+            print(f"{Fore.RED}Opcão invalida!{Style.RESET_ALL}")
 
 
 # Main
